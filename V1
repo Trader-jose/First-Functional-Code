@@ -1,0 +1,35 @@
+//@version=2
+
+// Define the symbol and time frame to trade
+symbol = "EURUSD"
+timeframe = "5m"
+
+// Load the two indicators
+ema20 = ema(close, 20)
+ema200 = ema(close, 200)
+
+// Define the MACD function
+macdLine = ema(close, 12) - ema(close, 26)
+signalLine = ema(macdLine, 9)
+macd = macdLine - signalLine
+
+// Set the entry and exit rules
+longEntry = crossover(ema20, ema200) and macd > 0
+longExit = crossunder(ema20, ema200)
+shortEntry = crossunder(ema20, ema200) and macd < 0
+shortExit = crossover(ema20, ema200)
+
+// Set the position size to 5 units
+positionSize = 5
+
+strategy("Scalping Strategy", overlay=true)
+
+// Execute the trades
+if longEntry
+    strategy.entry("Long", strategy.long, qty = positionSize)
+if longExit
+    strategy.close_all(longExit)
+if shortEntry
+    strategy.entry("Short", strategy.short, qty = positionSize)
+if shortExit
+    strategy.close_all(shortExit)
